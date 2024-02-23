@@ -1,0 +1,303 @@
+﻿using System;
+using System.Security.Cryptography;
+
+namespace File_Managing
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+            Console.WriteLine("Choose an option:");
+            Console.WriteLine("[1] File Renamer");
+            Console.WriteLine("[2] Duplicate File Detector");
+            Console.WriteLine("[3] Credits");
+            Console.WriteLine("[4] Exit");
+            Console.Write("Option: ");
+            string option = Console.ReadLine();
+
+            switch (option)
+            {
+                case "1":
+                    FileRenamer.Run(args);
+                    break;
+                case "2":
+                    DupeDTC.Run(args);
+                    break;
+                case "3":
+                    Credits.PrintCredits();
+                    break;
+                case "4":
+                    Console.WriteLine("Exiting...");
+                    Thread.Sleep(250);
+                    break;
+                default:
+                    Console.WriteLine("Invalid option");
+                    break;
+            }
+        }
+        public static void Restart(string[] args)
+        {
+            Main(args);
+        }
+    }
+    class Credits
+    {
+        public static void PrintCredits()
+        {
+            Console.Clear();
+            Console.WriteLine("_________                    .___.__  __          \r\n\\_   ___ \\_______   ____   __| _/|__|/  |_  ______\r\n/    \\  \\/\\_  __ \\_/ __ \\ / __ | |  \\   __\\/  ___/\r\n\\     \\____|  | \\/\\  ___// /_/ | |  ||  |  \\___ \\ \r\n \\______  /|__|    \\___  >____ | |__||__| /____  >\r\n        \\/             \\/     \\/               \\/ ");
+            Console.WriteLine("File Renamer: Whoswhip");
+            Console.WriteLine("Duplicate File Detector: Themida");
+            Console.WriteLine("[1] Go Back");
+            Console.Write("Option: ");
+            string choice = Console.ReadLine();
+            if (choice == "1")
+            {
+                Console.Clear();
+                Program.Restart(null);
+            }
+            else
+            {
+                Console.WriteLine("Invalid option");
+            }
+
+        }
+    }
+    class FileRenamer
+    {
+        public static void Run(string[] args)
+        {
+            bool continueRenaming = true;
+
+            while (continueRenaming)
+            {
+                Console.Clear();
+                Console.WriteLine("___________.__ .__            __________                                                  \r\n\\_   _____/|__||  |    ____   \\______   \\  ____    ____  _____     _____    ____  _______ \r\n |    __)  |  ||  |  _/ __ \\   |       _/_/ __ \\  /    \\ \\__  \\   /     \\ _/ __ \\ \\_  __ \\\r\n |     \\   |  ||  |__\\  ___/   |    |   \\\\  ___/ |   |  \\ / __ \\_|  Y Y  \\\\  ___/  |  | \\/\r\n \\___  /   |__||____/ \\___  >  |____|_  / \\___  >|___|  /(____  /|__|_|  / \\___  > |__|   \r\n     \\/                   \\/          \\/      \\/      \\/      \\/       \\/      \\/         ");
+
+                // Get the folder path from the user
+                Console.Write("Enter the folder path: ");
+                string? folderPath = Console.ReadLine();
+
+                // Check if the folder exists
+                if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
+                {
+                    Console.WriteLine("Folder does not exist!");
+                    continue;
+                }
+
+                // Prompt the user to choose the renaming method
+                Console.WriteLine("Choose the renaming method:");
+                Console.WriteLine("[1] Randomize file names");
+                Console.WriteLine("[2] Incremental file names");
+                Console.WriteLine("[3] Randomize and then Incremental");
+                Console.Write("Option: ");
+                string? choice = Console.ReadLine();
+
+                // Perform the chosen renaming method
+                switch (choice)
+                {
+                    case "1":
+                        RandomizeFileNames(folderPath);
+                        break;
+                    case "2":
+                        IncrementalFileNames(folderPath);
+                        break;
+                    case "3":
+                        RandomizeFileNames(folderPath);
+                        IncrementalFileNames(folderPath);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice!");
+                        break;
+                }
+
+                Console.WriteLine("File renaming completed!");
+
+                // Ask if the user wants to continue renaming
+                Console.Write("Do you want to rename more files? (Y/N): ");
+                string? continueChoice = Console.ReadLine();
+                continueRenaming = (continueChoice?.ToUpper() == "Y");
+                Console.Clear();
+                if (!continueRenaming)
+                {
+                    Console.Clear();
+                    Program.Restart(args);
+                }
+            }
+        }
+
+        static void RandomizeFileNames(string folderPath)
+        {
+            // Get all the files in the folder
+            string[] files = Directory.GetFiles(folderPath);
+
+            // Generate random names for each file
+            Random random = new Random();
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string randomName = Path.GetRandomFileName();
+                string newFileName = randomName.Replace(".", "") + fileExtension;
+                string newFilePath = Path.Combine(folderPath, newFileName);
+                File.Move(file, newFilePath);
+            }
+        }
+
+        static void IncrementalFileNames(string folderPath)
+        {
+            // Get all the files in the folder
+            string[] files = Directory.GetFiles(folderPath);
+
+            // Rename files with incremental names
+            int count = 1;
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string newFileName = $"{count}{fileExtension}";
+                string newFilePath = Path.Combine(folderPath, newFileName);
+
+                // Check if the new file already exists
+                if (File.Exists(newFilePath))
+                {
+                    Console.WriteLine($"File '{newFileName}' already exists. Skipping...");
+                    continue;
+                }
+
+                File.Move(file, newFilePath);
+                count++;
+            }
+        }
+    }
+
+    class DupeDTC
+    {
+        private static string CalculateSha256(string filePath)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                using (var fileStream = File.OpenRead(filePath))
+                {
+                    var hash = sha256.ComputeHash(fileStream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
+
+        private static List<Tuple<string, string>> FindDuplicateFiles(string directory)
+        {
+            var fileHashMap = new Dictionary<string, string>();
+            var duplicateFiles = new List<Tuple<string, string>>();
+
+            foreach (var filePath in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                var fileHash = CalculateSha256(filePath);
+                if (fileHashMap.ContainsKey(fileHash))
+                {
+                    duplicateFiles.Add(new Tuple<string, string>(filePath, fileHashMap[fileHash]));
+                }
+                else
+                {
+                    fileHashMap[fileHash] = filePath;
+                }
+            }
+
+            return duplicateFiles;
+        }
+
+        private static void DeleteDuplicateFiles(List<Tuple<string, string>> duplicateFiles)
+        {
+            foreach (var filePair in duplicateFiles)
+            {
+                try
+                {
+                    Console.WriteLine($"Deleting {filePair.Item2}");
+                    File.Delete(filePair.Item2);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error deleting file {filePair.Item2}: {e.Message}");
+                }
+            }
+        }
+
+        public static void Run(string[] args)
+        {
+            Console.Clear();
+            Console.WriteLine("________                        ___________.__.__           ________          __                 __                 \r\n\\______ \\  __ ________   ____   \\_   _____/|__|  |   ____   \\______ \\   _____/  |_  ____   _____/  |_  ___________  \r\n |    |  \\|  |  \\____ \\_/ __ \\   |    __)  |  |  | _/ __ \\   |    |  \\_/ __ \\   __\\/ __ \\_/ ___\\   __\\/  _ \\_  __ \\ \r\n |    `   \\  |  /  |_> >  ___/   |     \\   |  |  |_\\  ___/   |    `   \\  ___/|  | \\  ___/\\  \\___|  | (  <_> )  | \\/ \r\n/_______  /____/|   __/ \\___  >  \\___  /   |__|____/\\___  > /_______  /\\___  >__|  \\___  >\\___  >__|  \\____/|__|    \r\n        \\/      |__|        \\/       \\/                 \\/          \\/     \\/          \\/     \\/                    ");
+            Console.WriteLine("Enter the folder path: ");
+            var directory = Console.ReadLine();
+            CancellationTokenSource cts = new CancellationTokenSource();
+            // Loading animation
+            var loading = new Thread(() =>
+            {
+                var chars = new[] { '/', '-', '\\', '|' };
+                int x = 0;
+                while (!cts.Token.IsCancellationRequested)
+                {
+                    Console.Write("\r{0} Finding duplicate files...", chars[x++ % chars.Length]);
+                    Thread.Sleep(150);
+                }
+            })
+            { IsBackground = true };
+            loading.Start();
+
+            var duplicateFiles = FindDuplicateFiles(directory);
+
+           cts.Cancel();
+            int counter = 0;
+            
+
+            if (duplicateFiles.Count > 0)
+            {
+                Console.WriteLine("Duplicate files found:");
+                foreach (var filePair in duplicateFiles)
+                {
+                    Console.WriteLine($"{filePair.Item1} and {filePair.Item2}");
+                    counter++;
+                }
+
+                Console.Write(" \r\nDo you want to delete " + counter + " duplicate files? (y/n): ");
+                var userConfirmation = Console.ReadLine()?.ToLower();
+                if (userConfirmation == "y")
+                {
+                    DeleteDuplicateFiles(duplicateFiles);
+                    Console.WriteLine("Duplicate files deleted.");
+                    if (counter == 1)
+                    {
+                        Console.WriteLine($"{counter} file deleted.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{counter} files deleted.");
+                    }
+                }
+                else
+                {
+                    
+                    Console.WriteLine("No files deleted.");
+                }
+            }
+            else
+            {
+                
+                Console.WriteLine("No duplicate files found.");
+            }
+
+            Console.Write("Do you want to go again? (y/n): ");
+            var goAgain = Console.ReadLine()?.ToLower();
+            if (goAgain == "y")
+            {
+                Console.Clear();
+                Run(args);
+            }
+            else
+            {
+                Console.Clear();
+                Program.Restart(args);
+            }
+        }
+    }
+}
