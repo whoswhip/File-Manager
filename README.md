@@ -3,3 +3,7 @@ A cool little c# application that lets you rename files and detect duplicates ea
 
 # Showcase
 ![video](https://femboi.pics/imgexc/ryt1GAlXiH31Hjaiacsd07829_02283097a05abfb91319.mp4)
+
+
+https://github.com/whoswhip/File-Manager/assets/124531971/78ec6d20-ebef-47e1-a094-73ffdf04bfea
+
