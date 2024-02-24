@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 
 namespace File_Managing
@@ -134,6 +134,8 @@ namespace File_Managing
 
             // Generate random names for each file
             Random random = new Random();
+            int randomizedCount = 0; // Counter for the number of files randomized
+
             foreach (string file in files)
             {
                 string fileName = Path.GetFileName(file);
@@ -142,7 +144,10 @@ namespace File_Managing
                 string newFileName = randomName.Replace(".", "") + fileExtension;
                 string newFilePath = Path.Combine(folderPath, newFileName);
                 File.Move(file, newFilePath);
+                randomizedCount++; // Increment the counter
             }
+
+            Console.WriteLine($"Randomized names for {randomizedCount} files.");
         }
 
         static void IncrementalFileNames(string folderPath)
@@ -169,6 +174,8 @@ namespace File_Managing
                 File.Move(file, newFilePath);
                 count++;
             }
+
+            Console.WriteLine($"Renamed {count - 1} files.");
         }
     }
 
