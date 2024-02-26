@@ -56,7 +56,7 @@ namespace File_Managing
             Console.WriteLine("_________                    .___.__  __          \r\n\\_   ___ \\_______   ____   __| _/|__|/  |_  ______\r\n/    \\  \\/\\_  __ \\_/ __ \\ / __ | |  \\   __\\/  ___/\r\n\\     \\____|  | \\/\\  ___// /_/ | |  ||  |  \\___ \\ \r\n \\______  /|__|    \\___  >____ | |__||__| /____  >\r\n        \\/             \\/     \\/               \\/ ");
             Console.WriteLine("File Renamer & Multiple Gallery-dl's: Whoswhip");
             Console.WriteLine("Duplicate File Detector: Themida");
-            Console.WriteLine("Gallery-dl: Mike Fährmann");
+            Console.WriteLine("Gallery-dl: Mike Fährmann https://github.com/mikf/gallery-dl");
             Console.WriteLine("[1] Go Back");
             Console.Write("Option: ");
             string choice = Console.ReadLine();
