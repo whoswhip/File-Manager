@@ -13,8 +13,8 @@ namespace File_Managing
             Console.WriteLine("Choose an option:");
             Console.WriteLine("[1] File Renamer");
             Console.WriteLine("[2] Duplicate File Detector");
-            Console.WriteLine("[3] Credits");
-            Console.WriteLine("[4] Multiple Gallery-dl's");
+            Console.WriteLine("[3] Multiple Gallery-dl's");
+            Console.WriteLine("[4] Credits");
             Console.WriteLine("[5] Exit");
             Console.Write("Option: ");
             string option = Console.ReadLine();
@@ -28,10 +28,10 @@ namespace File_Managing
                     DupeDTC.Run(args);
                     break;
                 case "3":
-                    Credits.PrintCredits();
+                    gallerydl.run(args);
                     break;
                 case "4":
-                    gallerydl.run(args);
+                    Credits.PrintCredits();
                     break;
                 case "5":
                     Console.WriteLine("Exiting...");
