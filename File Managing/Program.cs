@@ -54,8 +54,9 @@ namespace File_Managing
             Console.Title = "Credits";
             Console.Clear();
             Console.WriteLine("_________                    .___.__  __          \r\n\\_   ___ \\_______   ____   __| _/|__|/  |_  ______\r\n/    \\  \\/\\_  __ \\_/ __ \\ / __ | |  \\   __\\/  ___/\r\n\\     \\____|  | \\/\\  ___// /_/ | |  ||  |  \\___ \\ \r\n \\______  /|__|    \\___  >____ | |__||__| /____  >\r\n        \\/             \\/     \\/               \\/ ");
-            Console.WriteLine("File Renamer: Whoswhip");
+            Console.WriteLine("File Renamer & Multiple Gallery-dl's: Whoswhip");
             Console.WriteLine("Duplicate File Detector: Themida");
+            Console.WriteLine("Gallery-dl: Mike Fährmann");
             Console.WriteLine("[1] Go Back");
             Console.Write("Option: ");
             string choice = Console.ReadLine();
@@ -327,7 +328,7 @@ namespace File_Managing
             while (loop) {
                 Console.Clear();
                 Console.Title = "Multiple Gallery-DL's";
-                Console.WriteLine("  ________       .__  .__                                    .___.__   \r\n /  _____/_____  |  | |  |   ___________ ___.__.           __| _/|  |  \r\n/   \\  ___\\__  \\ |  | |  | _/ __ \\_  __ <   |  |  ______  / __ | |  |  \r\n\\    \\_\\  \\/ __ \\|  |_|  |_\\  ___/|  | \\/\\___  | /_____/ / /_/ | |  |__\r\n \\______  (____  /____/____/\\___  >__|   / ____|         \\____ | |____/\r\n        \\/     \\/               \\/       \\/                   \\/       ");
+                Console.WriteLine("  ________       .__  .__                                ________  .____     \r\n /  _____/_____  |  | |  |   ___________ ___.__.         \\______ \\ |    |    \r\n/   \\  ___\\__  \\ |  | |  | _/ __ \\_  __ <   |  |  ______  |    |  \\|    |    \r\n\\    \\_\\  \\/ __ \\|  |_|  |_\\  ___/|  | \\/\\___  | /_____/  |    `   \\    |___ \r\n \\______  (____  /____/____/\\___  >__|   / ____|         /_______  /_______ \\\r\n        \\/     \\/               \\/       \\/                      \\/        \\/");
                 Console.Write("Enter the directory path: ");
                 string directoryPath = Console.ReadLine() ?? string.Empty;
 
