@@ -331,7 +331,8 @@ namespace File_Managing
                 Console.WriteLine("  ________       .__  .__                                ________  .____     \r\n /  _____/_____  |  | |  |   ___________ ___.__.         \\______ \\ |    |    \r\n/   \\  ___\\__  \\ |  | |  | _/ __ \\_  __ <   |  |  ______  |    |  \\|    |    \r\n\\    \\_\\  \\/ __ \\|  |_|  |_\\  ___/|  | \\/\\___  | /_____/  |    `   \\    |___ \r\n \\______  (____  /____/____/\\___  >__|   / ____|         /_______  /_______ \\\r\n        \\/     \\/               \\/       \\/                      \\/        \\/");
                 Console.Write("Enter the directory path: ");
                 string directoryPath = Console.ReadLine() ?? string.Empty;
-
+                Console.WriteLine("How many images/videos should be downloaded? (0=Until all are downloaded): ");
+                int amount = int.Parse(Console.ReadLine() ?? "0");
                 Console.Write("Enter the number of urls you want to scrape: ");
                 int numCommands = int.Parse(Console.ReadLine() ?? "0");
 
@@ -345,13 +346,25 @@ namespace File_Managing
                 }
 
                 List<Task> tasks = new List<Task>();
-
-                foreach (string url in urls)
+                if (amount == 0)
                 {
-                    string command = "gallery-dl " + '"' + url + '"';
-                    Task task = Task.Run(() => RunCommand(directoryPath, command));
-                    tasks.Add(task);
+                    foreach (string url in urls)
+                    {
+                        string command = "gallery-dl " + '"' + url + '"';
+                        Task task = Task.Run(() => RunCommand(directoryPath, command));
+                        tasks.Add(task);
+                    }
                 }
+                else
+                {
+                    foreach (string url in urls)
+                    {
+                        string command = "gallery-dl " + '"' + url + '"';
+                        Task task = Task.Run(() => RunCommandNumbered(directoryPath, command, amount));
+                        tasks.Add(task);
+                    }
+                }
+
 
                 Task.WaitAll(tasks.ToArray());
 
@@ -394,6 +407,40 @@ namespace File_Managing
             {
                 if (e.Data != null && e.Data.Contains("gallery-dl"))
                 {
+                    count++;
+                }
+                Console.WriteLine(e.Data);
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+        }
+        static void RunCommandNumbered(string directoryPath, string command, int amount)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = directoryPath
+            };
+
+            Process process = new Process { StartInfo = startInfo };
+            process.Start();
+
+            process.StandardInput.WriteLine(command);
+            process.StandardInput.Close();
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null && e.Data.Contains("gallery-dl"))
+                {
+                    if (count >= amount)
+                    {
+                        process.CloseMainWindow();
+                        process.Close();
+                    }
                     count++;
                 }
                 Console.WriteLine(e.Data);
