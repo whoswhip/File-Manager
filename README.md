@@ -16,6 +16,7 @@ This is quite helpful when cleaning out your download directory for any duplicat
 
 ### Multiple Gallery-dl's 
 This allows you to easily run multiple instances at once so you can scrape all you ever want! 
+Check supported websites at https://github.com/mikf/gallery-dl/blob/master/docs/supportedsites.md
 # Showcase
 https://github.com/whoswhip/File-Manager/assets/124531971/78ec6d20-ebef-47e1-a094-73ffdf04bfea
 
