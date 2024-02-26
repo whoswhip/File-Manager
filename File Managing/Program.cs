@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace File_Managing
@@ -7,12 +8,14 @@ namespace File_Managing
     {
         static void Main(string[] args)
         {
+            Console.Title = "File Managing";
             Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
             Console.WriteLine("Choose an option:");
             Console.WriteLine("[1] File Renamer");
             Console.WriteLine("[2] Duplicate File Detector");
             Console.WriteLine("[3] Credits");
-            Console.WriteLine("[4] Exit");
+            Console.WriteLine("[4] Multiple Gallery-dl's");
+            Console.WriteLine("[5] Exit");
             Console.Write("Option: ");
             string option = Console.ReadLine();
 
@@ -28,6 +31,9 @@ namespace File_Managing
                     Credits.PrintCredits();
                     break;
                 case "4":
+                    gallerydl.run(args);
+                    break;
+                case "5":
                     Console.WriteLine("Exiting...");
                     Thread.Sleep(250);
                     break;
@@ -45,6 +51,7 @@ namespace File_Managing
     {
         public static void PrintCredits()
         {
+            Console.Title = "Credits";
             Console.Clear();
             Console.WriteLine("_________                    .___.__  __          \r\n\\_   ___ \\_______   ____   __| _/|__|/  |_  ______\r\n/    \\  \\/\\_  __ \\_/ __ \\ / __ | |  \\   __\\/  ___/\r\n\\     \\____|  | \\/\\  ___// /_/ | |  ||  |  \\___ \\ \r\n \\______  /|__|    \\___  >____ | |__||__| /____  >\r\n        \\/             \\/     \\/               \\/ ");
             Console.WriteLine("File Renamer: Whoswhip");
@@ -72,6 +79,7 @@ namespace File_Managing
 
             while (continueRenaming)
             {
+                Console.Title = "File Renamer";
                 Console.Clear();
                 Console.WriteLine("___________.__ .__            __________                                                  \r\n\\_   _____/|__||  |    ____   \\______   \\  ____    ____  _____     _____    ____  _______ \r\n |    __)  |  ||  |  _/ __ \\   |       _/_/ __ \\  /    \\ \\__  \\   /     \\ _/ __ \\ \\_  __ \\\r\n |     \\   |  ||  |__\\  ___/   |    |   \\\\  ___/ |   |  \\ / __ \\_|  Y Y  \\\\  ___/  |  | \\/\r\n \\___  /   |__||____/ \\___  >  |____|_  / \\___  >|___|  /(____  /|__|_|  / \\___  > |__|   \r\n     \\/                   \\/          \\/      \\/      \\/      \\/       \\/      \\/         ");
 
@@ -232,6 +240,7 @@ namespace File_Managing
 
         public static void Run(string[] args)
         {
+            Console.Title = "Duplicate File Detector";
             Console.Clear();
             Console.WriteLine("________                        ___________.__.__           ________          __                 __                 \r\n\\______ \\  __ ________   ____   \\_   _____/|__|  |   ____   \\______ \\   _____/  |_  ____   _____/  |_  ___________  \r\n |    |  \\|  |  \\____ \\_/ __ \\   |    __)  |  |  | _/ __ \\   |    |  \\_/ __ \\   __\\/ __ \\_/ ___\\   __\\/  _ \\_  __ \\ \r\n |    `   \\  |  /  |_> >  ___/   |     \\   |  |  |_\\  ___/   |    `   \\  ___/|  | \\  ___/\\  \\___|  | (  <_> )  | \\/ \r\n/_______  /____/|   __/ \\___  >  \\___  /   |__|____/\\___  > /_______  /\\___  >__|  \\___  >\\___  >__|  \\____/|__|    \r\n        \\/      |__|        \\/       \\/                 \\/          \\/     \\/          \\/     \\/                    ");
             Console.WriteLine("Enter the folder path: ");
@@ -253,9 +262,9 @@ namespace File_Managing
 
             var duplicateFiles = FindDuplicateFiles(directory);
 
-           cts.Cancel();
+            cts.Cancel();
             int counter = 0;
-            
+
 
             if (duplicateFiles.Count > 0)
             {
@@ -283,13 +292,13 @@ namespace File_Managing
                 }
                 else
                 {
-                    
+
                     Console.WriteLine("No files deleted.");
                 }
             }
             else
             {
-                
+
                 Console.WriteLine("No duplicate files found.");
             }
 
@@ -305,6 +314,92 @@ namespace File_Managing
                 Console.Clear();
                 Program.Restart(args);
             }
+        }
+    }
+
+    class gallerydl
+    {
+        static int count;
+
+        public static void run(string[] args)
+        {
+            bool loop = true;
+            while (loop) {
+                Console.Clear();
+                Console.Title = "Multiple Gallery-DL's";
+                Console.WriteLine("  ________       .__  .__                                    .___.__   \r\n /  _____/_____  |  | |  |   ___________ ___.__.           __| _/|  |  \r\n/   \\  ___\\__  \\ |  | |  | _/ __ \\_  __ <   |  |  ______  / __ | |  |  \r\n\\    \\_\\  \\/ __ \\|  |_|  |_\\  ___/|  | \\/\\___  | /_____/ / /_/ | |  |__\r\n \\______  (____  /____/____/\\___  >__|   / ____|         \\____ | |____/\r\n        \\/     \\/               \\/       \\/                   \\/       ");
+                Console.Write("Enter the directory path: ");
+                string directoryPath = Console.ReadLine() ?? string.Empty;
+
+                Console.Write("Enter the number of urls you want to scrape: ");
+                int numCommands = int.Parse(Console.ReadLine() ?? "0");
+
+                List<string> urls = new List<string>();
+
+                for (int i = 0; i < numCommands; i++)
+                {
+                    Console.WriteLine($"Enter the URL #{i + 1}: ");
+                    string url = Console.ReadLine() ?? string.Empty;
+                    urls.Add(url);
+                }
+
+                List<Task> tasks = new List<Task>();
+
+                foreach (string url in urls)
+                {
+                    string command = "gallery-dl " + '"' + url + '"';
+                    Task task = Task.Run(() => RunCommand(directoryPath, command));
+                    tasks.Add(task);
+                }
+
+                Task.WaitAll(tasks.ToArray());
+
+                count = count - numCommands;
+                Console.WriteLine($" \r\n Total files downloaded: {count}");
+                Console.Write("Do you want to go again? (y/n): ");
+                var goAgain = Console.ReadLine()?.ToLower();
+                if (goAgain == "y")
+                {
+                    Console.Clear();
+                    loop = true;
+                }
+                else
+                {
+                    loop = false;
+                    Console.Clear();
+                    Program.Restart(args);
+                }
+            }
+        }
+
+        static void RunCommand(string directoryPath, string command)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = directoryPath
+            };
+
+            Process process = new Process { StartInfo = startInfo };
+            process.Start();
+
+            process.StandardInput.WriteLine(command);
+            process.StandardInput.Close();
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null && e.Data.Contains("gallery-dl"))
+                {
+                    count++;
+                }
+                Console.WriteLine(e.Data);
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
         }
     }
 }
