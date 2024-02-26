@@ -19,6 +19,7 @@ This is quite helpful when cleaning out your download directory for any duplicat
 
 ### Multiple Gallery-dl's 
 This allows you to easily run multiple instances at once so you can scrape all you ever want! 
+This does not directly use galler-dl it basically opens command prompt and types in your url like "gallery-dl "{url}" 
 Right now this does NOT support oauth or cookies, only websites that dont need you to be logged in.
 Check supported websites at https://github.com/mikf/gallery-dl/blob/master/docs/supportedsites.md
 # Showcase
