@@ -2,8 +2,11 @@
 A cool little c# application that lets you rename files and detect duplicates easily 
 
 ## Credits
-File Renamer: Whoswhip
+File Renamer & Multiple Gallery-dl's: Whoswhip
+<br/>
 Duplicate File Detecter: Themida
+<br/>
+Gallery-dl: Mike Fährmann
 
 ## Features
 ### File renamer
