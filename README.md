@@ -14,6 +14,8 @@ This feature can come in handy in very certain area where you would either just 
 This use SHA256 to scans all files in a folder for duplicate files, when the SHA256 matches with another file after all files are scanned in the folder it will prompt you to delete any duplicates.
 This is quite helpful when cleaning out your download directory for any duplicates so you can save on space.
 
+### Multiple Gallery-dl's 
+This allows you to easily run multiple instances at once so you can scrape all you ever want! 
 # Showcase
 https://github.com/whoswhip/File-Manager/assets/124531971/78ec6d20-ebef-47e1-a094-73ffdf04bfea
 
