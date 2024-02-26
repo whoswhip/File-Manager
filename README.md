@@ -23,5 +23,6 @@ This does not directly use galler-dl it basically opens command prompt and types
 Right now this does NOT support oauth or cookies, only websites that dont need you to be logged in.
 Check supported websites at https://github.com/mikf/gallery-dl/blob/master/docs/supportedsites.md
 # Showcase
-https://github.com/whoswhip/File-Manager/assets/124531971/78ec6d20-ebef-47e1-a094-73ffdf04bfea
+https://github.com/whoswhip/File-Manager/assets/124531971/c1107e88-875b-401a-9065-3475732f903f
+
 
