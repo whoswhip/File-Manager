@@ -84,26 +84,21 @@ namespace File_Managing
                 Console.Clear();
                 Console.WriteLine("___________.__ .__            __________                                                  \r\n\\_   _____/|__||  |    ____   \\______   \\  ____    ____  _____     _____    ____  _______ \r\n |    __)  |  ||  |  _/ __ \\   |       _/_/ __ \\  /    \\ \\__  \\   /     \\ _/ __ \\ \\_  __ \\\r\n |     \\   |  ||  |__\\  ___/   |    |   \\\\  ___/ |   |  \\ / __ \\_|  Y Y  \\\\  ___/  |  | \\/\r\n \\___  /   |__||____/ \\___  >  |____|_  / \\___  >|___|  /(____  /|__|_|  / \\___  > |__|   \r\n     \\/                   \\/          \\/      \\/      \\/      \\/       \\/      \\/         ");
 
-                // Get the folder path from the user
                 Console.Write("Enter the folder path: ");
                 string? folderPath = Console.ReadLine();
 
-                // Check if the folder exists
                 if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
                 {
                     Console.WriteLine("Folder does not exist!");
                     continue;
                 }
 
-                // Prompt the user to choose the renaming method
                 Console.WriteLine("Choose the renaming method:");
                 Console.WriteLine("[1] Randomize file names");
                 Console.WriteLine("[2] Incremental file names");
                 Console.WriteLine("[3] Randomize and then Incremental");
                 Console.Write("Option: ");
                 string? choice = Console.ReadLine();
-
-                // Perform the chosen renaming method
                 switch (choice)
                 {
                     case "1":
@@ -123,7 +118,6 @@ namespace File_Managing
 
                 Console.WriteLine("File renaming completed!");
 
-                // Ask if the user wants to continue renaming
                 Console.Write("Do you want to rename more files? (Y/N): ");
                 string? continueChoice = Console.ReadLine();
                 continueRenaming = (continueChoice?.ToUpper() == "Y");
@@ -138,12 +132,10 @@ namespace File_Managing
 
         static void RandomizeFileNames(string folderPath)
         {
-            // Get all the files in the folder
             string[] files = Directory.GetFiles(folderPath);
 
-            // Generate random names for each file
             Random random = new Random();
-            int randomizedCount = 0; // Counter for the number of files randomized
+            int randomizedCount = 0; 
 
             foreach (string file in files)
             {
@@ -153,7 +145,7 @@ namespace File_Managing
                 string newFileName = randomName.Replace(".", "") + fileExtension;
                 string newFilePath = Path.Combine(folderPath, newFileName);
                 File.Move(file, newFilePath);
-                randomizedCount++; // Increment the counter
+                randomizedCount++; 
             }
 
             Console.WriteLine($"Randomized names for {randomizedCount} files.");
@@ -161,10 +153,8 @@ namespace File_Managing
 
         static void IncrementalFileNames(string folderPath)
         {
-            // Get all the files in the folder
             string[] files = Directory.GetFiles(folderPath);
 
-            // Rename files with incremental names
             int count = 1;
             foreach (string file in files)
             {
@@ -247,7 +237,6 @@ namespace File_Managing
             Console.WriteLine("Enter the folder path: ");
             var directory = Console.ReadLine();
             CancellationTokenSource cts = new CancellationTokenSource();
-            // Loading animation
             var loading = new Thread(() =>
             {
                 var chars = new[] { '/', '-', '\\', '|' };
@@ -436,12 +425,16 @@ namespace File_Managing
             {
                 if (e.Data != null && e.Data.Contains("gallery-dl"))
                 {
-                    if (count >= amount)
+                    if (!e.Data.StartsWith("#")) 
                     {
-                        process.CloseMainWindow();
-                        process.Close();
+                        if (count >= amount)
+                        {
+                            process.CloseMainWindow();
+                            process.Close();
+                        }
+                        count++;
                     }
-                    count++;
+
                 }
                 Console.WriteLine(e.Data);
             };
