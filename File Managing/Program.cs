@@ -97,6 +97,9 @@ namespace File_Managing
                 Console.WriteLine("[1] Randomize file names");
                 Console.WriteLine("[2] Incremental file names");
                 Console.WriteLine("[3] Randomize and then Incremental");
+                Console.WriteLine("[4] Prefixed Incremental");
+                Console.WriteLine("[5] Prefixed Randomized");
+                Console.WriteLine("[6] Prefixed Randomized and then Incremental");
                 Console.Write("Option: ");
                 string? choice = Console.ReadLine();
                 switch (choice)
@@ -110,6 +113,15 @@ namespace File_Managing
                     case "3":
                         RandomizeFileNames(folderPath);
                         IncrementalFileNames(folderPath);
+                        break;
+                    case "4":
+                        PrefixedIncrementalFileNames(folderPath);
+                        break;
+                    case "5":
+                        PrefixedRandomizedFileNames(folderPath);
+                        break;
+                    case "6":
+                        PrefixedRandomandIncremental(folderPath);
                         break;
                     default:
                         Console.WriteLine("Invalid choice!");
@@ -176,6 +188,103 @@ namespace File_Managing
 
             Console.WriteLine($"Renamed {count - 1} files.");
         }
+        
+        static void PrefixedIncrementalFileNames(string folderPath)
+        {
+            Console.Write("Enter the prefix: ");
+            string prefix = Console.ReadLine();
+
+            string[] files = Directory.GetFiles(folderPath);
+
+            int count = 1;
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string newFileName = $"{prefix}{count}{fileExtension}";
+                string newFilePath = Path.Combine(folderPath, newFileName);
+
+                // Check if the new file already exists
+                if (File.Exists(newFilePath))
+                {
+                    Console.WriteLine($"File '{newFileName}' already exists. Skipping...");
+                    continue;
+                }
+
+                File.Move(file, newFilePath);
+                count++;
+            }
+
+            Console.WriteLine($"Renamed {count - 1} files.");
+        }   
+
+        static void PrefixedRandomizedFileNames(string folderPath)
+        {
+            Console.Write("Enter the prefix: ");
+            string prefix = Console.ReadLine();
+
+            string[] files = Directory.GetFiles(folderPath);
+
+            Random random = new Random();
+            int randomizedCount = 0; 
+
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string randomName = Path.GetRandomFileName();
+                string newFileName = $"{prefix}{randomName.Replace(".", "")}{fileExtension}";
+                string newFilePath = Path.Combine(folderPath, newFileName);
+                File.Move(file, newFilePath);
+                randomizedCount++; 
+            }
+
+            Console.WriteLine($"Randomized names for {randomizedCount} files.");
+        }   
+
+        static void PrefixedRandomandIncremental(string folderPath)
+        {
+            Console.Write("Enter the prefix: ");
+            string prefix = Console.ReadLine();
+
+            string[] files = Directory.GetFiles(folderPath);
+
+            Random random = new Random();
+            int randomizedCount = 0; 
+
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string randomName = Path.GetRandomFileName();
+                string newFileName = $"{prefix}{randomName.Replace(".", "")}{fileExtension}";
+                string newFilePath = Path.Combine(folderPath, newFileName);
+                File.Move(file, newFilePath);
+                randomizedCount++; 
+            }
+
+            Console.WriteLine($"Randomized names for {randomizedCount} files.");
+            files = Directory.GetFiles(folderPath);
+            int count = 1;
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string fileExtension = Path.GetExtension(file);
+                string newFileName = $"{prefix}{count}{fileExtension}";
+                string newFilePath = Path.Combine(folderPath, newFileName);
+
+                if (File.Exists(newFilePath))
+                {
+                    Console.WriteLine($"File '{newFileName}' already exists. Skipping...");
+                    continue;
+                }
+
+                File.Move(file, newFilePath);
+                count++;
+            }
+
+            Console.WriteLine($"Renamed {count - 1} files.");
+        }   
     }
 
     class DupeDTC
@@ -331,7 +440,6 @@ namespace File_Managing
                 {
                     Console.WriteLine($"Enter the URL #{i + 1}: ");
                     string url = Console.ReadLine() ?? string.Empty;
-                    urls.Add(url);
                 }
 
                 List<Task> tasks = new List<Task>();
