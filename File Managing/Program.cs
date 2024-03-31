@@ -1,6 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Reflection;
+using PasswordGen;
+using File_Managing;
+
 
 namespace File_Managing
 {
@@ -14,8 +21,10 @@ namespace File_Managing
             Console.WriteLine("[1] File Renamer");
             Console.WriteLine("[2] Duplicate File Detector");
             Console.WriteLine("[3] Multiple Gallery-dl's");
-            Console.WriteLine("[4] Credits");
-            Console.WriteLine("[5] Exit");
+            Console.WriteLine("[4] Files to Webhook");
+            Console.WriteLine("[5] Generators");
+            Console.WriteLine("[6] Credits");
+            Console.WriteLine("[7] Exit");
             Console.Write("Option: ");
             string option = Console.ReadLine();
 
@@ -31,9 +40,15 @@ namespace File_Managing
                     gallerydl.run(args);
                     break;
                 case "4":
-                    Credits.PrintCredits();
+                    FilestoWebhook.Run(args);
                     break;
                 case "5":
+                    Generators.Run(args);
+                    break;
+                case "6":
+                    Credits.PrintCredits();
+                    break;
+                case "7":
                     Console.WriteLine("Exiting...");
                     Thread.Sleep(250);
                     break;
@@ -125,6 +140,8 @@ namespace File_Managing
                         break;
                     default:
                         Console.WriteLine("Invalid choice!");
+                        Thread.Sleep(250);
+                        Run(null);
                         break;
                 }
 
@@ -549,6 +566,422 @@ namespace File_Managing
 
             process.BeginOutputReadLine();
             process.WaitForExit();
+        }
+    }
+
+    class FilestoWebhook
+
+    {
+        public static void Run(string[] args) 
+        { 
+            Console.Clear();
+            Console.Title = "Files to Webhook";
+            Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+            Console.Write("Enter the directory path: ");
+            string directoryPath = Console.ReadLine();
+            Console.Write("Enter the webhook URL: ");
+            string webhookUrl = Console.ReadLine();
+            SendFilesToWebhook(directoryPath, webhookUrl).Wait();
+            Console.WriteLine("Files sent to webhook.");
+            Console.Write("Do you want to go again? (y/n): ");
+            var goAgain = Console.ReadLine()?.ToLower();
+            if (goAgain == "y")
+            {
+                Console.Clear();
+                Run(args);
+            }
+            else
+            {
+                Console.Clear();
+                Program.Restart(args);
+            }
+        }
+        public static async Task SendFilesToWebhook(string directoryPath, string webhookUrl)
+        {
+            string[] files = Directory.GetFiles(directoryPath);
+
+            foreach (string file in files)
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.Length <= 25 * 1024 * 1024) // Check if file size is 25MB or lower
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        using (MultipartFormDataContent formData = new MultipartFormDataContent())
+                        {
+                            using (FileStream fileStream = File.OpenRead(file))
+                            {
+                                Console.WriteLine($"Sending {fileInfo.Name} to webhook...");
+                                formData.Add(new StreamContent(fileStream), "file", fileInfo.Name);
+                                await client.PostAsync(webhookUrl, formData);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"File {fileInfo.Name} is too large to send to webhook.");
+                    Console.ResetColor();
+                }
+            }
+        }
+    }
+
+    class Generators
+    {
+        public static void Run(string[] args)
+        {
+            Console.Title = "Generators";
+            Console.Clear();
+            Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+            Console.WriteLine("[1] Password Generator");
+            Console.WriteLine("[2] Username Generator");
+            Console.WriteLine("[3] Go Back");
+
+            Console.Write("Option: ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    PasswordGen.Program.MainGen(args);
+                    
+                    break;
+                case "2":
+                    GenerateUsername();
+                    break;
+                case "3":
+                    Console.Clear();
+                    Program.Restart(null);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice!");
+                    Thread.Sleep(250);
+                    Console.Clear();
+                    Run(null);
+                    break;
+            }
+            
+        }
+        public static void PasswordGenerator()
+        {
+            bool continueGenerating = true;
+            while (continueGenerating) { 
+            Console.Write("Enter the length of the password: ");
+            int length = int.Parse(Console.ReadLine());
+            Console.Write("Enter the number of passwords to generate: ");
+            int numPasswords = int.Parse(Console.ReadLine());
+            Console.Write("Include uppercase letters? (y/n): ");
+            bool includeUppercase = Console.ReadLine()?.ToLower() == "y";
+            Console.Write("Include lowercase letters? (y/n): ");
+            bool includeLowercase = Console.ReadLine()?.ToLower() == "y";
+            Console.Write("Include numbers? (y/n): ");
+            bool includeNumbers = Console.ReadLine()?.ToLower() == "y";
+            Console.Write("Include special characters? (y/n): ");
+            bool includeSpecial = Console.ReadLine()?.ToLower() == "y";
+
+            string chars = "";
+            if (includeUppercase)
+            {
+                chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            }
+            if (includeLowercase)
+            {
+                chars += "abcdefghijklmnopqrstuvwxyz";
+            }
+            if (includeNumbers)
+            {
+                chars += "0123456789";
+            }
+            if (includeSpecial)
+            {
+                chars += "!@#$%^&*_+-=?";
+            }
+
+            Random random = new Random();
+            for (int i = 0; i < numPasswords; i++)
+            {
+                string password = new string(Enumerable.Repeat(chars, length)
+                                     .Select(s => s[random.Next(s.Length)]).ToArray());
+                Console.WriteLine(password);
+
+            }
+            Console.Write("Do you want to generate more passwords? (y/n): ");
+                string choice = Console.ReadLine()?.ToLower();
+                if (choice == "n")
+                {
+                    continueGenerating = false;
+                    Console.Clear();
+                    Generators.Run(null);
+                }
+            }
+
+        }
+        public static async Task GenerateUsername()
+        {
+            bool continueGenerating = true;
+            while (continueGenerating) { 
+            Console.Write("Enter the number of words in the username: ");
+            int numWords = int.Parse(Console.ReadLine());
+
+            Console.Write("Include prefix? (y/n): ");
+            bool includePrefix = Console.ReadLine()?.ToLower() == "y";
+
+            Console.Write("Include numbers at the end? (y/n): ");
+            bool includeNumbers = Console.ReadLine()?.ToLower() == "y";
+
+               
+                var resourceName = "File_Managing.words.txt";
+
+                var assembly = Assembly.GetExecutingAssembly();
+
+                string[] words;
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                string result = reader.ReadToEnd();
+                words = result.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
+
+            Random random = new Random();
+            string username = "";
+
+            if (includePrefix)
+            {
+                string[] emotions = { "happy", "sad", "angry", "excited", "calm", "brave", "shy", "proud", "confused", "curious" };
+                string prefix = emotions[random.Next(emotions.Length)];
+                username += prefix;
+            }
+
+            for (int i = 0; i < numWords; i++)
+            {
+                string word = words[random.Next(words.Length)];
+                username += word;
+            }
+
+            if (includeNumbers)
+            {
+                int randomNumber = random.Next(1000, 9999);
+                username += randomNumber;
+            }
+
+            Console.WriteLine("Generated username: " + username);
+            Console.Write("Do you want to generate another username? (y/n): ");
+            string choice = Console.ReadLine()?.ToLower();
+            if (choice == "n")
+             {
+                    continueGenerating = false;
+                    Console.Clear();
+                    Generators.Run(null);
+             }
+            }
+        }
+
+
+    }
+
+}
+namespace PasswordGen
+{
+    class PasswordGenerator
+    {
+        private const string LowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+        private const string UppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private const string NumberChars = "0123456789";
+        private const string SymbolChars = "!@#$%^&*";
+
+        public static string GeneratePassword(int length, bool includeSymbols, bool includeNumbers, bool includeLowercase, bool includeUppercase)
+        {
+            string validChars = "";
+
+            if (includeSymbols)
+                validChars += SymbolChars;
+            if (includeNumbers)
+                validChars += NumberChars;
+            if (includeLowercase)
+                validChars += LowercaseChars;
+            if (includeUppercase)
+                validChars += UppercaseChars;
+
+            if (validChars.Length == 0)
+            {
+                throw new ArgumentException("At least one character type must be selected.");
+            }
+
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] randomBytes = new byte[length];
+                rng.GetBytes(randomBytes);
+
+                char[] password = new char[length];
+                for (int i = 0; i < length; i++)
+                {
+                    password[i] = validChars[randomBytes[i] % validChars.Length];
+                }
+
+                return new string(password);
+            }
+        }
+    }
+
+    class Program
+    {
+        public static void MainGen(string[] args)
+        {
+
+            Console.Clear();
+            Console.Title = "Password Generator";
+            Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("[1] Normal");
+            Console.WriteLine("[2] Randomized Length");
+            Console.WriteLine("[3] Go Back");
+            Console.Write("Option: ");
+            string? choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    Normal.Run(args);
+                    break;
+                case "2":
+                    Randomlength.Run(args);
+                    break;
+                case "3":
+                    File_Managing.Generators.Run(args);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice!");
+                    Thread.Sleep(250);
+                    MainGen(args);
+                    break;
+            }
+        }
+        public static void Restart(string[] args)
+        {
+            MainGen(args);
+        }
+    }
+    class Savetofile
+    {
+        public static void Run(string password)
+        {
+            string directory = Environment.CurrentDirectory;
+            string fileName = "Generated_Password.txt";
+            string filePath = Path.Combine(directory, fileName);
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.Write(password);
+            }
+            Console.WriteLine($"Saved to {filePath}");
+            File.Open(filePath, FileMode.Open);
+        }
+    }
+    class Normal
+    {
+        public static void Run(string[] args)
+        {
+            bool generateAnother = true;
+
+            while (generateAnother)
+            {
+                Console.Clear();
+                Console.Title = "Password Generator";
+                Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+                Console.WriteLine("-------------------------");
+                Console.Write("Print out password? (y/n): ");
+                bool quick = Console.ReadLine().ToLower() == "y";
+                Console.WriteLine("-------------------------");
+                Console.Write("Enter the length of the password: ");
+                int length = int.Parse(Console.ReadLine());
+
+                Console.Write("Include symbols? (y/n): ");
+                bool includeSymbols = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include numbers? (y/n): ");
+                bool includeNumbers = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include lowercase characters? (y/n): ");
+                bool includeLowercase = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include uppercase characters? (y/n): ");
+                bool includeUppercase = Console.ReadLine().ToLower() == "y";
+
+                string password = PasswordGenerator.GeneratePassword(length, includeSymbols, includeNumbers, includeLowercase, includeUppercase);
+                if (quick)
+                {
+                    Console.WriteLine($"Generated Password: {password}");
+                }
+
+                Console.Write("Save to file? (y/n): ");
+                bool save = Console.ReadLine().ToLower() == "y";
+                if (save)
+                {
+                    Savetofile.Run(password);
+                }
+
+                Console.Write("Generate another password? (y/n): ");
+                generateAnother = Console.ReadLine().ToLower() == "y";
+                if (!generateAnother)
+                {
+                    Console.Clear();
+                    Program.Restart(args);
+                }
+            }
+        }
+    }
+    class Randomlength
+    {
+        public static void Run(string[] args)
+        {
+            bool generateAnother2 = true;
+
+
+
+            while (generateAnother2)
+            {
+                Console.Clear();
+                Console.Title = "Password Generator";
+                Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+                Console.WriteLine("-------------------------");
+                Random rand = new Random();
+                int length = rand.Next(10, 10000);
+                Console.WriteLine($"Length = {length}");
+                Console.WriteLine("-------------------------");
+                Console.Write("Print out password? (y/n): ");
+                bool quick = Console.ReadLine().ToLower() == "y";
+                Console.WriteLine("-------------------------");
+                Console.Write("Include symbols? (y/n): ");
+                bool includeSymbols = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include numbers? (y/n): ");
+                bool includeNumbers = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include lowercase characters? (y/n): ");
+                bool includeLowercase = Console.ReadLine().ToLower() == "y";
+
+                Console.Write("Include uppercase characters? (y/n): ");
+                bool includeUppercase = Console.ReadLine().ToLower() == "y";
+
+                string password = PasswordGenerator.GeneratePassword(length, includeSymbols, includeNumbers, includeLowercase, includeUppercase);
+                if (quick)
+                {
+                    Console.WriteLine($"Generated Password: {password}");
+                }
+
+                Console.Write("Save to file? (y/n): ");
+                bool save = Console.ReadLine().ToLower() == "y";
+                if (save)
+                {
+                    Savetofile.Run(password);
+                }
+                Console.Write("Generate another password? (y/n): ");
+                generateAnother2 = Console.ReadLine().ToLower() == "y";
+                if (!generateAnother2)
+                {
+                    Console.Clear();
+                    Program.Restart(args);
+                }
+            }
         }
     }
 }
