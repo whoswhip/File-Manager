@@ -1,5 +1,5 @@
 # File-Manager
-A cool little c# application that lets you rename files and detect duplicates easily 
+A cool little c# application that lets you rename files, detect duplicate files, and use multiple gallery-dl instances at once! 
 
 ## Credits
 File Renamer & Multiple Gallery-dl's: Whoswhip
@@ -10,7 +10,7 @@ Gallery-dl: Mike Fährmann
 
 ## Features
 ### File renamer
-This allows you to easily rename all files in a specified folder incrementally, randomize the name or do both, randomize then incrementally.
+This allows you to easily rename all files in a specified folder incrementally, randomize the name or do both, randomize then incrementally, aswell as being able to rename them incrementall/randomized with a prefix.
 This feature can come in handy in very certain area where you would either just like randomzied file names or files named incrementally to make them look nicer
 
 ### Duplicate File Detecter (Made by: Themida)
