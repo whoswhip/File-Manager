@@ -1,8 +1,8 @@
 # File-Manager
-A cool little c# application that lets you rename files, detect duplicate files, and use multiple gallery-dl instances at once! 
+A cool little c# application that lets you rename files, detect duplicate files, use multiple gallery-dl instances at once, send all files in a directory that are =< 25MB to a discord webhook, and generate a secure password or username!
 
 ## Credits
-File Renamer & Multiple Gallery-dl's: Whoswhip
+File Renamer, Multiple Gallery-dl's, Files to Webhook, Password Generator & Username Generator: Whoswhip
 <br/>
 Duplicate File Detecter: Themida
 <br/>
@@ -22,7 +22,16 @@ This allows you to easily run multiple instances at once so you can scrape all y
 This does not directly use galler-dl it basically opens command prompt and types in your url like "gallery-dl "{url}" 
 Right now this does NOT support oauth or cookies, only websites that dont need you to be logged in.
 Check supported websites at https://github.com/mikf/gallery-dl/blob/master/docs/supportedsites.md
+
+### Files to Webhook
+This will send ALL files within the directory you provide that are equal to are less than 25 megabytes to a DISCORD webhook.
+### Generators 
+#### Password Generator 
+This will generate a secure password using the RNG Crypto Service, you can generate a random length or put a specified length. This is from my [other repo](https://github.com/whoswhip/password-generator)
+#### Username Generator
+This will generate a username based off [this list of english words](https://github.com/dwyl/english-words/blob/master/words.txt), enabling prefix will put an emotion at the start of the username like a RecRoom Junior account, you also choose how many words will be in the username, or enable a random number being placed at the end of your username.
 # Showcase
+## THIS IS OLD
 https://github.com/whoswhip/File-Manager/assets/124531971/c1107e88-875b-401a-9065-3475732f903f
 
 
