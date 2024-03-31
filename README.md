@@ -10,7 +10,7 @@ Gallery-dl: Mike Fährmann
 
 ## Features
 ### File renamer
-This allows you to easily rename all files in a specified folder incrementally, randomize the name or do both, randomize then incrementally, aswell as being able to rename them incrementall/randomized with a prefix.
+This allows you to easily rename all files in a specified folder incrementally, randomize the name or do both, randomize then incrementally, aswell as being able to rename them incrementally/randomized with a prefix.
 This feature can come in handy in very certain area where you would either just like randomzied file names or files named incrementally to make them look nicer
 
 ### Duplicate File Detecter (Made by: Themida)
