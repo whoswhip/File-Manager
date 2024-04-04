@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using PasswordGen;
 using File_Managing;
+using System.Runtime.CompilerServices;
 
 
 namespace File_Managing
@@ -23,9 +24,9 @@ namespace File_Managing
             Console.WriteLine("[3] Multiple Gallery-dl's");
             Console.WriteLine("[4] Files to Discord Webhook");
             Console.WriteLine("[5] Generators");
-            //Console.WriteLine("[6] Other");
-            Console.WriteLine("[6] Credits");
-            Console.WriteLine("[7] Exit");
+            Console.WriteLine("[6] Other");
+            Console.WriteLine("[7] Credits");
+            Console.WriteLine("[8] Exit");
             Console.Write("Option: ");
             string option = Console.ReadLine();
 
@@ -46,12 +47,13 @@ namespace File_Managing
                 case "5":
                     Generators.Run(args);
                     break;
-                //case "6":
-                //    break;
                 case "6":
-                    Credits.PrintCredits();
+                    Other.Run(args);
                     break;
                 case "7":
+                    Credits.PrintCredits();
+                    break;
+                case "8":
                     Console.WriteLine("Exiting...");
                     Thread.Sleep(250);
                     break;
@@ -309,7 +311,7 @@ namespace File_Managing
 
     class DupeDTC
     {
-        private static string CalculateSha256(string filePath)
+        public static string CalculateSha256(string filePath)
         {
             using (var sha256 = SHA256.Create())
             {
@@ -584,7 +586,6 @@ namespace File_Managing
             Console.Write("Enter the webhook URL: ");
             string webhookUrl = Console.ReadLine();
             SendFilesToWebhook(directoryPath, webhookUrl).Wait();
-            Console.WriteLine("Files sent to webhook.");
             Console.Write("Do you want to go again? (y/n): ");
             var goAgain = Console.ReadLine()?.ToLower();
             if (goAgain == "y")
@@ -601,22 +602,42 @@ namespace File_Managing
 
         public static async Task SendFilesToWebhook(string directoryPath, string webhookUrl)
         {
-            bool infinitey = false;
-            Console.WriteLine("Would you like to infinitely check for files?");
+            int count = 0;
+            bool infinity = false;
+            Console.Write("Would you like to infinitely check for files? (y/n): ");
             var infinite = Console.ReadLine()?.ToLower();
             if (infinite == "y")
             {
-                infinitey = true;
+                infinity = true;
             }
             else
             {
-                infinitey = false;
+                infinity = false;
             }
             HashSet<string> sentFiles = new HashSet<string>();
             string[] files = Directory.GetFiles(directoryPath);
             int currentfileCount = files.Length;
             bool continueSending = true;
             Console.WriteLine($"Found {currentfileCount} files in directory.");
+            string appDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "whoswhip");
+            string fileManagingFolderPath = Path.Combine(appDataFolderPath, "file managing");
+            string sentHashesFilePath = Path.Combine(fileManagingFolderPath, "SentHashes.txt");
+
+            if (!Directory.Exists(appDataFolderPath))
+            {
+                Directory.CreateDirectory(appDataFolderPath);
+            }
+
+            if (!Directory.Exists(fileManagingFolderPath))
+            {
+                Directory.CreateDirectory(fileManagingFolderPath);
+            }
+            if (File.Exists(sentHashesFilePath) && new FileInfo(sentHashesFilePath).Length > 0)
+            {
+                string[] existingHashes = File.ReadAllLines(sentHashesFilePath);
+
+                sentFiles = new HashSet<string>(existingHashes);
+            }
             while (continueSending) { 
 
                 foreach (string file in files)
@@ -637,6 +658,7 @@ namespace File_Managing
                                             Console.WriteLine($"Sending {fileInfo.Name} to webhook...");
                                             formData.Add(new StreamContent(fileStream), "file", fileInfo.Name);
                                             await client.PostAsync(webhookUrl, formData);
+                                            count++;
                                         }
                                     }
                                 }
@@ -644,11 +666,14 @@ namespace File_Managing
 
                             catch (IOException ex)
                             {
+                                string error = ex.Message;
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine($"File {fileInfo.Name} is being used by another process. Skipping...");
+                                Console.WriteLine($"File {fileInfo.Name} can't be sent, an error has occurred: {error}");
                                 Console.ResetColor();
                             }
-                            sentFiles.Add(fileInfo.Name);
+                            string hash = DupeDTC.CalculateSha256(file);
+                            //Console.WriteLine($"Hash: {hash}"); This was for testing 
+                            sentFiles.Add(hash);
                         }
                         else
                         {
@@ -675,9 +700,21 @@ namespace File_Managing
                     Console.WriteLine("No new files found in directory.");
                     continueSending = false;
                 }
-                if (infinitey)
+                if (infinity)
                 {
                     continueSending = true;
+                }
+            }
+            Console.WriteLine("All Files sent to webhook.");
+            Console.WriteLine($"Sent {count} files to webhook.");
+            if (count > 0) { 
+                Console.Write("Would you like to save the hashes to disk? (y/n): ");
+                var saveHashes = Console.ReadLine()?.ToLower();
+                if (saveHashes == "y")
+                {
+                    File.WriteAllLines(sentHashesFilePath, sentFiles);
+                    Console.WriteLine($"Hashes saved to {sentHashesFilePath}");
+                    Console.WriteLine("This will prevent duplicate files from being sent.");
                 }
             }
         }
@@ -835,36 +872,48 @@ namespace File_Managing
 
     }
 
-    //class Other
-    //{
-    //    public static void Run(string[] args)
-    //    {
-    //        Console.Clear();
-    //        Console.Title = "Other";
-    //        Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
-    //        Console.WriteLine("[1] Gallery-Dl to Discord Webhook");
-    //        Console.WriteLine("[1] Go Back");
-    //        Console.Write("Option: ");
-    //        string choice = Console.ReadLine();
-    //        switch (choice)
-    //        {
-    //            case "1":
-    //                break;
-    //            case "2":
-    //                break;
-    //            case "3":
-    //                Console.Clear();
-    //                Program.Restart(null);
-    //                break;
-    //            default:
-    //                Console.WriteLine("Invalid choice!");
-    //                Thread.Sleep(250);
-    //                Console.Clear();
-    //                Run(null);
-    //                break;
-    //        }
-    //    }
-    //}   
+    class Other
+    {
+        public static void Run(string[] args)
+        {
+            Console.Clear();
+            Console.Title = "Other";
+            Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+            Console.WriteLine("[1] Clear Sent Hashes");
+            Console.WriteLine("[2] Go Back");
+            Console.Write("Option: ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    string appDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "whoswhip");
+                    string fileManagingFolderPath = Path.Combine(appDataFolderPath, "file managing");
+                    string sentHashesFilePath = Path.Combine(fileManagingFolderPath, "SentHashes.txt");
+                    if (File.Exists(sentHashesFilePath)) { 
+                    File.Delete(sentHashesFilePath);
+                    Console.WriteLine($"{sentHashesFilePath} has been deleted.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("SentHashes.txt Does not exist.");
+                    }
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                    Run(null);
+                    break;
+                case "2":
+                    Console.Clear();
+                    Program.Restart(null);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice!");
+                    Thread.Sleep(250);
+                    Console.Clear();
+                    Run(null);
+                    break;
+            }
+        }
+    }
 
 }
 namespace PasswordGen
