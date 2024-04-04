@@ -21,8 +21,9 @@ namespace File_Managing
             Console.WriteLine("[1] File Renamer");
             Console.WriteLine("[2] Duplicate File Detector");
             Console.WriteLine("[3] Multiple Gallery-dl's");
-            Console.WriteLine("[4] Files to Webhook");
+            Console.WriteLine("[4] Files to Discord Webhook");
             Console.WriteLine("[5] Generators");
+            //Console.WriteLine("[6] Other");
             Console.WriteLine("[6] Credits");
             Console.WriteLine("[7] Exit");
             Console.Write("Option: ");
@@ -37,7 +38,7 @@ namespace File_Managing
                     DupeDTC.Run(args);
                     break;
                 case "3":
-                    gallerydl.run(args);
+                    Gallerydl.run(args);
                     break;
                 case "4":
                     FilestoWebhook.Run(args);
@@ -45,6 +46,8 @@ namespace File_Managing
                 case "5":
                     Generators.Run(args);
                     break;
+                //case "6":
+                //    break;
                 case "6":
                     Credits.PrintCredits();
                     break;
@@ -433,7 +436,7 @@ namespace File_Managing
         }
     }
 
-    class gallerydl
+    class Gallerydl
     {
         static int count;
 
@@ -570,10 +573,9 @@ namespace File_Managing
     }
 
     class FilestoWebhook
-
     {
-        public static void Run(string[] args) 
-        { 
+        public static void Run(string[] args)
+        {
             Console.Clear();
             Console.Title = "Files to Webhook";
             Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
@@ -596,33 +598,86 @@ namespace File_Managing
                 Program.Restart(args);
             }
         }
+
         public static async Task SendFilesToWebhook(string directoryPath, string webhookUrl)
         {
-            string[] files = Directory.GetFiles(directoryPath);
-
-            foreach (string file in files)
+            bool infinitey = false;
+            Console.WriteLine("Would you like to infinitely check for files?");
+            var infinite = Console.ReadLine()?.ToLower();
+            if (infinite == "y")
             {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo.Length <= 25 * 1024 * 1024) // Check if file size is 25MB or lower
+                infinitey = true;
+            }
+            else
+            {
+                infinitey = false;
+            }
+            HashSet<string> sentFiles = new HashSet<string>();
+            string[] files = Directory.GetFiles(directoryPath);
+            int currentfileCount = files.Length;
+            bool continueSending = true;
+            Console.WriteLine($"Found {currentfileCount} files in directory.");
+            while (continueSending) { 
+
+                foreach (string file in files)
                 {
-                    using (HttpClient client = new HttpClient())
+                    FileInfo fileInfo = new FileInfo(file);
+                    if (fileInfo.Length <= 25 * 1024 * 1024) // Check if file size is 25MB or lower
                     {
-                        using (MultipartFormDataContent formData = new MultipartFormDataContent())
+                        if (!sentFiles.Contains(fileInfo.Name))
                         {
-                            using (FileStream fileStream = File.OpenRead(file))
+                            try
                             {
-                                Console.WriteLine($"Sending {fileInfo.Name} to webhook...");
-                                formData.Add(new StreamContent(fileStream), "file", fileInfo.Name);
-                                await client.PostAsync(webhookUrl, formData);
+                                using (HttpClient client = new HttpClient())
+                                {
+                                    using (MultipartFormDataContent formData = new MultipartFormDataContent())
+                                    {
+                                        using (FileStream fileStream = File.OpenRead(file))
+                                        {
+                                            Console.WriteLine($"Sending {fileInfo.Name} to webhook...");
+                                            formData.Add(new StreamContent(fileStream), "file", fileInfo.Name);
+                                            await client.PostAsync(webhookUrl, formData);
+                                        }
+                                    }
+                                }
                             }
+
+                            catch (IOException ex)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine($"File {fileInfo.Name} is being used by another process. Skipping...");
+                                Console.ResetColor();
+                            }
+                            sentFiles.Add(fileInfo.Name);
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"File {fileInfo.Name} has already been sent to webhook. Skipping...");
+                            Console.ResetColor();
                         }
                     }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"File {fileInfo.Name} is too large to send to webhook.");
+                        Console.ResetColor();
+                    }
+                }
+                int newfileCount = Directory.GetFiles(directoryPath).Length;
+                if (newfileCount > currentfileCount)
+                {
+                    Console.WriteLine("New files found in directory. Sending...");
+                    continueSending = true;
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"File {fileInfo.Name} is too large to send to webhook.");
-                    Console.ResetColor();
+                    Console.WriteLine("No new files found in directory.");
+                    continueSending = false;
+                }
+                if (infinitey)
+                {
+                    continueSending = true;
                 }
             }
         }
@@ -779,6 +834,37 @@ namespace File_Managing
 
 
     }
+
+    //class Other
+    //{
+    //    public static void Run(string[] args)
+    //    {
+    //        Console.Clear();
+    //        Console.Title = "Other";
+    //        Console.WriteLine("___________.__.__              _____                                             \r\n\\_   _____/|__|  |   ____     /     \\ _____    ____ _____     ____   ___________ \r\n |    __)  |  |  | _/ __ \\   /  \\ /  \\\\__  \\  /    \\\\__  \\   / ___\\_/ __ \\_  __ \\\r\n |     \\   |  |  |_\\  ___/  /    Y    \\/ __ \\|   |  \\/ __ \\_/ /_/  >  ___/|  | \\/\r\n \\___  /   |__|____/\\___  > \\____|__  (____  /___|  (____  /\\___  / \\___  >__|   \r\n     \\/                 \\/          \\/     \\/     \\/     \\//_____/      \\/       ");
+    //        Console.WriteLine("[1] Gallery-Dl to Discord Webhook");
+    //        Console.WriteLine("[1] Go Back");
+    //        Console.Write("Option: ");
+    //        string choice = Console.ReadLine();
+    //        switch (choice)
+    //        {
+    //            case "1":
+    //                break;
+    //            case "2":
+    //                break;
+    //            case "3":
+    //                Console.Clear();
+    //                Program.Restart(null);
+    //                break;
+    //            default:
+    //                Console.WriteLine("Invalid choice!");
+    //                Thread.Sleep(250);
+    //                Console.Clear();
+    //                Run(null);
+    //                break;
+    //        }
+    //    }
+    //}   
 
 }
 namespace PasswordGen
@@ -985,3 +1071,4 @@ namespace PasswordGen
         }
     }
 }
+
